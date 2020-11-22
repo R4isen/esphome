@@ -17,8 +17,19 @@ def _merge_package(full_old, full_new):
         elif isinstance(new, list):
             if not isinstance(old, list):
                 return new
-            return old + new
-
+            res = old.copy()
+            new_temp = new.copy()
+            for el_res in res:
+                if 'id' not in el_res:
+                    continue
+                i = 0
+                while i < len(new_temp):
+                    if 'id' not in new_temp[i]:
+                        i += 1
+                        continue
+                    el = new_temp.pop(i)
+                    el_res = merge(el_res, el)
+            return res + new_temp
         return new
 
     return merge(full_old, full_new)
