@@ -19,7 +19,7 @@ def _merge_package(full_old, full_new):
                 return new
             res = old.copy()
             new_temp = new.copy()
-            for el_res in res:
+            for key_res, el_res in enumerate(res):
                 if 'id' not in el_res:
                     continue
                 i = 0
@@ -28,7 +28,7 @@ def _merge_package(full_old, full_new):
                         i += 1
                         continue
                     el = new_temp.pop(i)
-                    el_res = merge(el_res, el)
+                    res[key_res] = merge(el_res, el)
             return res + new_temp
         return new
 
