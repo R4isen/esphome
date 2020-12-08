@@ -24,7 +24,7 @@ def _merge_package(full_old, full_new):
                     continue
                 i = 0
                 while i < len(new_temp):
-                    if 'id' not in new_temp[i]:
+                    if 'id' not in new_temp[i] or el_res['id'] != new_temp[i]['id']:
                         i += 1
                         continue
                     el = new_temp.pop(i)
