@@ -203,6 +203,8 @@ void MQTTClientComponent::check_connected() {
   // MQTT Client needs some time to be fully set up.
   delay(100);  // NOLINT
 
+  this->publish_birth_message_();
+
   this->resubscribe_subscriptions_();
 
   for (MQTTComponent *component : this->children_)
@@ -268,11 +270,8 @@ void MQTTClientComponent::loop() {
         ESP_LOGW(TAG, "Lost MQTT Client connection!");
         this->start_dnslookup_();
       } else {
-        if (!this->birth_message_.topic.empty() && !this->sent_birth_message_) {
-          this->sent_birth_message_ = this->publish(this->birth_message_);
-        }
-
-        this->last_connected_ = now;
+        this->publish_birth_message_();
+        
         this->resubscribe_subscriptions_();
       }
       break;
@@ -302,6 +301,14 @@ bool MQTTClientComponent::subscribe_(const char *topic, uint8_t qos) {
   }
   return ret != 0;
 }
+
+void MQTTClientComponent::publish_birth_message_() {
+  if (!this->birth_message_.topic.empty() && !this->sent_birth_message_) {
+    this->sent_birth_message_ = this->publish(this->birth_message_);
+  }
+  this->last_connected_ = millis();
+}
+
 void MQTTClientComponent::resubscribe_subscription_(MQTTSubscription *sub) {
   if (sub->subscribed)
     return;
@@ -503,7 +510,8 @@ void MQTTClientComponent::set_birth_message(MQTTMessage &&message) {
 
 void MQTTClientComponent::set_shutdown_message(MQTTMessage &&message) { this->shutdown_message_ = std::move(message); }
 
-void MQTTClientComponent::set_discovery_info(std::string &&prefix, bool retain, bool clean) {
+void MQTTClientComponent::set_discovery_info(std::string &&device_id, std::string &&prefix, bool retain, bool clean) {
+  this->discovery_info_.device_id = std::move(device_id);
   this->discovery_info_.prefix = std::move(prefix);
   this->discovery_info_.retain = retain;
   this->discovery_info_.clean = clean;
@@ -512,7 +520,7 @@ void MQTTClientComponent::set_discovery_info(std::string &&prefix, bool retain, 
 void MQTTClientComponent::disable_last_will() { this->last_will_.topic = ""; }
 
 void MQTTClientComponent::disable_discovery() {
-  this->discovery_info_ = MQTTDiscoveryInfo{.prefix = "", .retain = false};
+  this->discovery_info_ = MQTTDiscoveryInfo{.device_id = "", .prefix = "", .retain = false};
 }
 void MQTTClientComponent::on_shutdown() {
   if (!this->shutdown_message_.topic.empty()) {

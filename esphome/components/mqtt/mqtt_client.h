@@ -56,6 +56,7 @@ struct Availability {
  * See <a href="https://www.home-assistant.io/docs/mqtt/discovery/">MQTT Discovery</a>.
  */
 struct MQTTDiscoveryInfo {
+  std::string device_id;  ///< Idenitifier of the device. Empty means mac address will be used.
   std::string prefix;  ///< The Home Assistant discovery prefix. Empty means disabled.
   bool retain;         ///< Whether to retain discovery messages.
   bool clean;
@@ -96,7 +97,7 @@ class MQTTClientComponent : public Component {
    * @param prefix The Home Assistant discovery prefix.
    * @param retain Whether to retain discovery messages.
    */
-  void set_discovery_info(std::string &&prefix, bool retain, bool clean = false);
+  void set_discovery_info(std::string &&device_id, std::string &&prefix, bool retain, bool clean = false);
   /// Get Home Assistant discovery info.
   const MQTTDiscoveryInfo &get_discovery_info() const;
   /// Globally disable Home Assistant discovery.
@@ -230,6 +231,8 @@ class MQTTClientComponent : public Component {
   void resubscribe_subscription_(MQTTSubscription *sub);
   void resubscribe_subscriptions_();
 
+  void publish_birth_message_();
+
   MQTTCredentials credentials_;
   /// The last will message. Disabled optional denotes it being default and
   /// an empty topic denotes the the feature being disabled.
@@ -244,6 +247,7 @@ class MQTTClientComponent : public Component {
   /// The discovery info options for Home Assistant. Undefined optional means
   /// default and empty prefix means disabled.
   MQTTDiscoveryInfo discovery_info_{
+      .device_id = "",
       .prefix = "homeassistant",
       .retain = true,
       .clean = false,

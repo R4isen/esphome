@@ -6,7 +6,7 @@ from esphome import automation
 from esphome.automation import Condition
 from esphome.components import logger
 from esphome.const import CONF_AVAILABILITY, CONF_BIRTH_MESSAGE, CONF_BROKER, CONF_CLIENT_ID, \
-    CONF_COMMAND_TOPIC, CONF_DISCOVERY, CONF_DISCOVERY_PREFIX, CONF_DISCOVERY_RETAIN, \
+    CONF_COMMAND_TOPIC, CONF_DISCOVERY, CONF_DISCOVERY_DEVICE_ID, CONF_DISCOVERY_PREFIX, CONF_DISCOVERY_RETAIN, \
     CONF_ID, CONF_KEEPALIVE, CONF_LEVEL, CONF_LOG_TOPIC, CONF_ON_JSON_MESSAGE, CONF_ON_MESSAGE, \
     CONF_PASSWORD, CONF_PAYLOAD, CONF_PAYLOAD_AVAILABLE, CONF_PAYLOAD_NOT_AVAILABLE, CONF_PORT, \
     CONF_QOS, CONF_REBOOT_TIMEOUT, CONF_RETAIN, CONF_SHUTDOWN_MESSAGE, CONF_SSL_FINGERPRINTS, \
@@ -107,6 +107,7 @@ CONFIG_SCHEMA = cv.All(cv.Schema({
     cv.Optional(CONF_PASSWORD, default=''): cv.string,
     cv.Optional(CONF_CLIENT_ID): cv.string,
     cv.Optional(CONF_DISCOVERY, default=True): cv.Any(cv.boolean, cv.one_of("CLEAN", upper=True)),
+    cv.Optional(CONF_DISCOVERY_DEVICE_ID, default=""): cv.string,
     cv.Optional(CONF_DISCOVERY_RETAIN, default=True): cv.boolean,
     cv.Optional(CONF_DISCOVERY_PREFIX, default="homeassistant"): cv.publish_topic,
 
@@ -167,15 +168,16 @@ def to_code(config):
         cg.add(var.set_client_id(config[CONF_CLIENT_ID]))
 
     discovery = config[CONF_DISCOVERY]
+    device_id = config[CONF_DISCOVERY_DEVICE_ID]
     discovery_retain = config[CONF_DISCOVERY_RETAIN]
     discovery_prefix = config[CONF_DISCOVERY_PREFIX]
 
     if not discovery:
         cg.add(var.disable_discovery())
     elif discovery == "CLEAN":
-        cg.add(var.set_discovery_info(discovery_prefix, discovery_retain, True))
+        cg.add(var.set_discovery_info(device_id, discovery_prefix, discovery_retain, True))
     elif CONF_DISCOVERY_RETAIN in config or CONF_DISCOVERY_PREFIX in config:
-        cg.add(var.set_discovery_info(discovery_prefix, discovery_retain))
+        cg.add(var.set_discovery_info(device_id, discovery_prefix, discovery_retain))
 
     cg.add(var.set_topic_prefix(config[CONF_TOPIC_PREFIX]))
 

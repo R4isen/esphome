@@ -267,6 +267,7 @@ void OTAComponent::handle_() {
   this->client_.stop();
   delay(10);
   ESP_LOGI(TAG, "OTA update finished!");
+  this->finish_callback_.call();
   this->status_clear_warning();
   delay(100);  // NOLINT
   App.safe_reboot();
@@ -399,6 +400,10 @@ void OTAComponent::clean_rtc() { this->write_rtc_(0); }
 void OTAComponent::on_safe_shutdown() {
   if (this->has_safe_mode_)
     this->clean_rtc();
+}
+
+void OTAComponent::add_on_finish_callback(std::function<void()> &&callback) {
+  this->finish_callback_.add(std::move(callback));
 }
 
 }  // namespace ota
