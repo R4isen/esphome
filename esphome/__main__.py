@@ -296,6 +296,13 @@ def command_upload(args, config):
     _LOGGER.info("Successfully uploaded program.")
     return 0
 
+def command_loop_upload(args, config):
+    exit_code: int
+    for _ in range(100):
+        exit_code = command_upload(args, config)
+        if exit_code == 0:
+            return exit_code
+    return exit_code
 
 def command_logs(args, config):
     port = choose_upload_log_host(default=args.serial_port, check_default=None,
@@ -408,6 +415,7 @@ POST_CONFIG_ACTIONS = {
     'config': command_config,
     'compile': command_compile,
     'upload': command_upload,
+    'loop-upload': command_loop_upload,
     'logs': command_logs,
     'run': command_run,
     'clean-mqtt': command_clean_mqtt,
@@ -438,6 +446,11 @@ def parse_args(argv):
                                 action='store_true')
 
     parser_upload = subparsers.add_parser('upload', help='Validate the configuration '
+                                                         'and upload the latest binary.')
+    parser_upload.add_argument('--upload-port', help="Manually specify the upload port to use. "
+                                                     "For example /dev/cu.SLAB_USBtoUART.")
+    
+    parser_upload = subparsers.add_parser('loop-upload', help='Validate the configuration '
                                                          'and upload the latest binary.')
     parser_upload.add_argument('--upload-port', help="Manually specify the upload port to use. "
                                                      "For example /dev/cu.SLAB_USBtoUART.")
