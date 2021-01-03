@@ -296,9 +296,9 @@ def command_upload(args, config):
     _LOGGER.info("Successfully uploaded program.")
     return 0
 
-def command_loop_upload(args, config):
+def command_retry_upload(args, config):
     exit_code: int
-    for _ in range(100):
+    for _ in range(args.n):
         exit_code = command_upload(args, config)
         if exit_code == 0:
             return exit_code
@@ -415,7 +415,7 @@ POST_CONFIG_ACTIONS = {
     'config': command_config,
     'compile': command_compile,
     'upload': command_upload,
-    'loop-upload': command_loop_upload,
+    'retry-upload': command_retry_upload,
     'logs': command_logs,
     'run': command_run,
     'clean-mqtt': command_clean_mqtt,
@@ -450,10 +450,11 @@ def parse_args(argv):
     parser_upload.add_argument('--upload-port', help="Manually specify the upload port to use. "
                                                      "For example /dev/cu.SLAB_USBtoUART.")
     
-    parser_upload = subparsers.add_parser('loop-upload', help='Validate the configuration '
-                                                         'and upload the latest binary.')
-    parser_upload.add_argument('--upload-port', help="Manually specify the upload port to use. "
+    parser_retry_upload = subparsers.add_parser('retry-upload', help='Retry "upload" command '
+                                                         'until success or at maximum N times.')
+    parser_retry_upload.add_argument('--upload-port', help="Manually specify the upload port to use. "
                                                      "For example /dev/cu.SLAB_USBtoUART.")
+    parser_retry_upload.add_argument('-n', help="Number of retries. Defaults to 100.", type=int, default=100)
 
     parser_logs = subparsers.add_parser('logs', help='Validate the configuration '
                                                      'and show all MQTT logs.')
