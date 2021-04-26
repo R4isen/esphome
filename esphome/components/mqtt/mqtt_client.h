@@ -57,8 +57,8 @@ struct Availability {
  */
 struct MQTTDiscoveryInfo {
   std::string device_id;  ///< Idenitifier of the device. Empty means mac address will be used.
-  std::string prefix;  ///< The Home Assistant discovery prefix. Empty means disabled.
-  bool retain;         ///< Whether to retain discovery messages.
+  std::string prefix;     ///< The Home Assistant discovery prefix. Empty means disabled.
+  bool retain;            ///< Whether to retain discovery messages.
   bool clean;
 };
 
