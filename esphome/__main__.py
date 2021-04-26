@@ -315,6 +315,13 @@ def command_upload(args, config):
     _LOGGER.info("Successfully uploaded program.")
     return 0
 
+def command_retry_upload(args, config):
+    exit_code: int
+    for _ in range(args.n):
+        exit_code = command_upload(args, config)
+        if exit_code == 0:
+            return exit_code
+    return exit_code
 
 def command_logs(args, config):
     port = choose_upload_log_host(
@@ -443,6 +450,7 @@ POST_CONFIG_ACTIONS = {
     "config": command_config,
     "compile": command_compile,
     "upload": command_upload,
+    "retry-upload": command_retry_upload,
     "logs": command_logs,
     "run": command_run,
     "clean-mqtt": command_clean_mqtt,
@@ -493,6 +501,12 @@ def parse_args(argv):
         help="Manually specify the upload port to use. "
         "For example /dev/cu.SLAB_USBtoUART.",
     )
+
+    parser_retry_upload = subparsers.add_parser("retry-upload", help="Retry \"upload\" command "
+                                                    "until success or at maximum N times.")
+    parser_retry_upload.add_argument("--upload-port", help="Manually specify the upload port to use. "
+                                                    "For example /dev/cu.SLAB_USBtoUART.")
+    parser_retry_upload.add_argument("-n", help="Number of retries. Defaults to 100.", type=int, default=100)
 
     parser_logs = subparsers.add_parser(
         "logs", help="Validate the configuration " "and show all MQTT logs."
