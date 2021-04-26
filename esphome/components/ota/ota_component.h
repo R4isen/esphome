@@ -64,7 +64,7 @@ class OTAComponent : public Component {
   void on_safe_shutdown() override;
 
   void add_on_finish_callback(std::function<void()> &&callback);
-  
+
  protected:
   void write_rtc_(uint32_t val);
   uint32_t read_rtc_();
@@ -90,12 +90,10 @@ class OTAComponent : public Component {
 };
 
 class OTATrigger : public Trigger<> {
-  public:
-    explicit OTATrigger(OTAComponent *parent) {
-      parent->add_on_finish_callback([this]() {
-        this->trigger();
-      });
-    }
+ public:
+  explicit OTATrigger(OTAComponent *parent) {
+    parent->add_on_finish_callback([this]() { this->trigger(); });
+  }
 };
 
 }  // namespace ota
