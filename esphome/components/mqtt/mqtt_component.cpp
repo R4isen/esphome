@@ -98,8 +98,9 @@ bool MQTTComponent::send_discovery_() {
           root["unique_id"] = "ESP" + this->component_type() + this->get_default_object_id_();
         }
 
+        const MQTTDiscoveryInfo &discovery_info = global_mqtt_client->get_discovery_info();
         JsonObject &device_info = root.createNestedObject("device");
-        device_info["identifiers"] = get_mac_address();
+        device_info["identifiers"] = discovery_info.device_id != "" ? discovery_info.device_id : get_mac_address();
         device_info["name"] = node_name;
         device_info["sw_version"] = "esphome v" ESPHOME_VERSION " " + App.get_compilation_time();
 #ifdef ARDUINO_BOARD

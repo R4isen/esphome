@@ -12,6 +12,7 @@ from esphome.const import (
     CONF_CLIENT_ID,
     CONF_COMMAND_TOPIC,
     CONF_DISCOVERY,
+    CONF_DISCOVERY_DEVICE_ID,
     CONF_DISCOVERY_PREFIX,
     CONF_DISCOVERY_RETAIN,
     CONF_ID,
@@ -146,6 +147,7 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_DISCOVERY, default=True): cv.Any(
                 cv.boolean, cv.one_of("CLEAN", upper=True)
             ),
+            cv.Optional(CONF_DISCOVERY_DEVICE_ID, default=""): cv.string,
             cv.Optional(CONF_DISCOVERY_RETAIN, default=True): cv.boolean,
             cv.Optional(
                 CONF_DISCOVERY_PREFIX, default="homeassistant"
@@ -224,15 +226,16 @@ def to_code(config):
         cg.add(var.set_client_id(config[CONF_CLIENT_ID]))
 
     discovery = config[CONF_DISCOVERY]
+    device_id = config[CONF_DISCOVERY_DEVICE_ID]
     discovery_retain = config[CONF_DISCOVERY_RETAIN]
     discovery_prefix = config[CONF_DISCOVERY_PREFIX]
 
     if not discovery:
         cg.add(var.disable_discovery())
     elif discovery == "CLEAN":
-        cg.add(var.set_discovery_info(discovery_prefix, discovery_retain, True))
+        cg.add(var.set_discovery_info(device_id, discovery_prefix, discovery_retain, True))
     elif CONF_DISCOVERY_RETAIN in config or CONF_DISCOVERY_PREFIX in config:
-        cg.add(var.set_discovery_info(discovery_prefix, discovery_retain))
+        cg.add(var.set_discovery_info(device_id, discovery_prefix, discovery_retain))
 
     cg.add(var.set_topic_prefix(config[CONF_TOPIC_PREFIX]))
 
