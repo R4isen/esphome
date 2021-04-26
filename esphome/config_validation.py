@@ -999,9 +999,14 @@ def requires_component(comp):
     # pylint: disable=unsupported-membership-test
     def validator(value):
         # pylint: disable=unsupported-membership-test
-        if (comp not in CORE.raw_config and
-                CONF_PACKAGES not in CORE.raw_config and
-                comp not in {y for x in CORE.raw_config[CONF_PACKAGES].values() for y in x.keys()}):
+        if (
+            comp not in CORE.raw_config
+            and CONF_PACKAGES not in CORE.raw_config
+            and comp
+            not in {
+                y for x in CORE.raw_config[CONF_PACKAGES].values() for y in x.keys()
+            }
+        ):
             raise Invalid(f"This option requires component {comp}")
         return value
 
