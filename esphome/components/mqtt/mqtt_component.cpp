@@ -100,7 +100,7 @@ bool MQTTComponent::send_discovery_() {
 
         const MQTTDiscoveryInfo &discovery_info = global_mqtt_client->get_discovery_info();
         JsonObject &device_info = root.createNestedObject("device");
-        device_info["identifiers"] = discovery_info.device_id != "" ? discovery_info.device_id : get_mac_address();
+        device_info["identifiers"] = discovery_info.device_id.empty() ? get_mac_address() : discovery_info.device_id;
         device_info["name"] = node_name;
         device_info["sw_version"] = "esphome v" ESPHOME_VERSION " " + App.get_compilation_time();
 #ifdef ARDUINO_BOARD

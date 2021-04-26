@@ -279,7 +279,7 @@ void MQTTClientComponent::loop() {
         this->start_dnslookup_();
       } else {
         this->publish_birth_message_();
-        
+
         this->resubscribe_subscriptions_();
       }
       break;
