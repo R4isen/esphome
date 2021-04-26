@@ -1,7 +1,7 @@
 from esphome.cpp_generator import RawExpression
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome import automation, core
+from esphome import automation
 from esphome.const import (
     CONF_ID,
     CONF_NUM_ATTEMPTS,
